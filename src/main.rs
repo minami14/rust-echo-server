@@ -7,11 +7,9 @@ fn main() {
     for stream in listener.incoming() {
         match stream {
             Ok(stream) => {
-                thread::spawn(move || {
-                    echo(stream).unwrap_or_else(|err| eprintln!("{}", err))
-                });
+                thread::spawn(|| echo(stream).unwrap_or_else(|err| eprintln!("{}", err)));
             }
-            Err(err) => eprintln!("{}", err)
+            Err(err) => eprintln!("{}", err),
         }
     }
 }
@@ -19,12 +17,10 @@ fn main() {
 fn echo(mut stream: TcpStream) -> Result<(), Error> {
     let mut buf = [0u8; 1024];
     match stream.read(&mut buf) {
-        Ok(n) => {
-            match stream.write(&buf[..n]) {
-                Ok(_) => stream.flush(),
-                Err(err) => Err(err)
-            }
-        }
-        Err(err) => Err(err)
+        Ok(n) => match stream.write(&buf[..n]) {
+            Ok(_) => stream.flush(),
+            Err(err) => Err(err),
+        },
+        Err(err) => Err(err),
     }
 }
